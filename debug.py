@@ -1,15 +1,14 @@
 
 import tensorflow_datasets as tfds
 
-
-def load_tfds(dataset="glue/sst2", do_sort=True, **kw):
-  """Load from TFDS, with optional sorting."""
-  # Materialize to NumPy arrays.
-  # This also ensures compatibility with TF1.x non-eager mode, which doesn't
-  # support direct iteration over a tf.data.Dataset.
-  ret = list(tfds.as_numpy(tfds.load(dataset, download=True, try_gcs=True, **kw)))
-  print(ret)
-  if do_sort:
-    # Recover original order, as if you loaded from a TSV file.
-    ret.sort(key=lambda ex: ex['idx'])
-  return ret
+ret = list(tfds.as_numpy(tfds.load("glue/sst2", download=True, try_gcs=True, split="train")))
+ret.sort(key=lambda ex: ex['idx'])
+print(ret)
+LABELS = ['0', '1']
+examples = []
+for ex in ret:
+  examples.append({
+    'sentence': ex['sentence'].decode('utf-8'),
+    'label': LABELS[ex['label']],
+  })
+print(examples)
